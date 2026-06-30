@@ -20,6 +20,16 @@ client.once(Events.ClientReady, (readyClient) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
+    if (interaction.isAutocomplete()) {
+      if (interaction.commandName === houseCommand.data.name) {
+        await houseCommand.autocomplete(interaction);
+        return;
+      }
+
+      await interaction.respond([]);
+      return;
+    }
+
     if (interaction.isButton() && (await handleChronicleButton(interaction))) {
       return;
     }

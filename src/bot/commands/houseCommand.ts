@@ -1,4 +1,8 @@
-import { SlashCommandBuilder, type ChatInputCommandInteraction } from "discord.js";
+import {
+  SlashCommandBuilder,
+  type AutocompleteInteraction,
+  type ChatInputCommandInteraction
+} from "discord.js";
 import { formatHouseStatus } from "../../formatters/discordFormatters.js";
 import {
   getHouseById,
@@ -17,7 +21,35 @@ export const houseCommand = {
         .setName("name")
         .setDescription("House name to view.")
         .setRequired(false)
+        .setAutocomplete(true)
     ),
+
+  async autocomplete(interaction: AutocompleteInteraction): Promise<void> {
+    const focusedOption = interaction.options.getFocused(true);
+    if (focusedOption.name !== "name") {
+      await interaction.respond([]);
+      return;
+    }
+
+    const focusedValue = String(focusedOption.value);
+    const houses = await listHouses();
+    const normalizedQuery = normalizeHouseSearch(focusedValue);
+    const choices = houses
+      .filter((house) => {
+        if (!normalizedQuery) {
+          return true;
+        }
+
+        return normalizeHouseSearch(house.name).includes(normalizedQuery);
+      })
+      .slice(0, 25)
+      .map((house) => ({
+        name: house.name,
+        value: house.name
+      }));
+
+    await interaction.respond(choices);
+  },
 
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
     const requestedName = interaction.options.getString("name")?.trim();
@@ -68,4 +100,12 @@ function formatRecognizedHouses(houses: Awaited<ReturnType<typeof listHouses>>):
   }
 
   return `Recognized Houses: ${houses.map((house) => house.name).join(", ")}`;
+}
+
+function normalizeHouseSearch(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/^house\s+/, "")
+    .replace(/[^a-z0-9]+/g, "");
 }
