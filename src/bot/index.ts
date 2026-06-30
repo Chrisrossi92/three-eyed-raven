@@ -9,6 +9,7 @@ import { realmCommand } from "./commands/realmCommand.js";
 import { handleChronicleButton } from "./interactions/chronicleButtons.js";
 import { handleCrownButton } from "./interactions/crownButtons.js";
 import { handleCrownModal } from "./interactions/crownModals.js";
+import { handleCrownSelect } from "./interactions/crownSelects.js";
 
 const token = getRequiredEnv("DISCORD_TOKEN");
 
@@ -46,6 +47,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (interaction.isModalSubmit() && (await handleCrownModal(interaction))) {
+      return;
+    }
+
+    if (interaction.isStringSelectMenu() && (await handleCrownSelect(interaction))) {
       return;
     }
 

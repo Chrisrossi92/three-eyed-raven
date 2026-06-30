@@ -48,6 +48,11 @@ export interface RealmState {
 export interface House {
   id: string;
   name: string;
+  words?: string | null;
+  description?: string | null;
+  sigil?: string | null;
+  seat?: string | null;
+  foundedLabel?: string | null;
   leaderDiscordId?: string | null;
   leaderRealmName?: string | null;
   leaderDisplayName?: string | null;

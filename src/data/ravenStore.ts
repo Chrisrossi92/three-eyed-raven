@@ -131,6 +131,11 @@ function createStarterHouse(id: string, name: string, status: House["status"]): 
   return {
     id,
     name,
+    words: null,
+    description: null,
+    sigil: null,
+    seat: null,
+    foundedLabel: null,
     leaderDiscordId: null,
     leaderRealmName: null,
     leaderDisplayName: null,

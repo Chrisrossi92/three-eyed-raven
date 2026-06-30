@@ -11,6 +11,11 @@ import type { House, HouseStatus, Player } from "../data/ravenTypes.js";
 export interface RecognizeHouseInput {
   id: string;
   name: string;
+  words?: string | null;
+  description?: string | null;
+  sigil?: string | null;
+  seat?: string | null;
+  foundedLabel?: string | null;
   leaderDiscordId?: string | null;
   leaderRealmName?: string | null;
   leaderDisplayName?: string | null;
@@ -22,6 +27,11 @@ export interface RecognizeHouseInput {
 
 export interface UpdateHouseInput {
   id: string;
+  words?: string | null;
+  description?: string | null;
+  sigil?: string | null;
+  seat?: string | null;
+  foundedLabel?: string | null;
   leaderDiscordId?: string | null;
   leaderRealmName?: string | null;
   leaderDisplayName?: string | null;
@@ -84,6 +94,11 @@ export async function recognizeHouse(input: RecognizeHouseInput): Promise<House>
   const house: House = {
     id,
     name,
+    words: input.words ?? null,
+    description: input.description ?? null,
+    sigil: input.sigil ?? null,
+    seat: input.seat ?? null,
+    foundedLabel: input.foundedLabel ?? null,
     leaderDiscordId: input.leaderDiscordId ?? null,
     leaderRealmName: input.leaderRealmName ?? null,
     leaderDisplayName: input.leaderDisplayName ?? null,
@@ -123,6 +138,21 @@ export async function updateHouse(input: UpdateHouseInput): Promise<House> {
   }
 
   const updated: House = { ...existing };
+  if ("words" in input) {
+    updated.words = input.words ?? null;
+  }
+  if ("description" in input) {
+    updated.description = input.description ?? null;
+  }
+  if ("sigil" in input) {
+    updated.sigil = input.sigil ?? null;
+  }
+  if ("seat" in input) {
+    updated.seat = input.seat ?? null;
+  }
+  if ("foundedLabel" in input) {
+    updated.foundedLabel = input.foundedLabel ?? null;
+  }
   if ("leaderDiscordId" in input) {
     updated.leaderDiscordId = input.leaderDiscordId ?? null;
   }

@@ -63,6 +63,16 @@ export function formatHouseStatus(house: House | undefined): DiscordReadyMessage
 
   const fields: DiscordMessageField[] = [
     {
+      name: "Sigil",
+      value: house.sigil ?? "No sigil recorded.",
+      inline: true
+    },
+    {
+      name: "Words",
+      value: house.words ?? "No words recorded.",
+      inline: false
+    },
+    {
       name: "Leader",
       value: formatHouseLeader(house),
       inline: true
@@ -80,9 +90,19 @@ export function formatHouseStatus(house: House | undefined): DiscordReadyMessage
   ];
 
   fields.push({
-    name: "Settlement",
-    value: house.settlementName ?? "No settlement recorded.",
+    name: "Seat",
+    value: house.seat ?? house.settlementName ?? "No seat recorded.",
     inline: true
+  });
+  fields.push({
+    name: "Current Goal",
+    value: house.currentGoal ?? "No current goal recorded.",
+    inline: false
+  });
+  fields.push({
+    name: "Description",
+    value: house.description ?? "No description recorded.",
+    inline: false
   });
   fields.push({
     name: "Alliances",
@@ -102,13 +122,18 @@ export function formatHouseStatus(house: House | undefined): DiscordReadyMessage
       inline: false
     });
   }
+  fields.push({
+    name: "Founded",
+    value: formatHouseFounded(house),
+    inline: true
+  });
 
   const message: DiscordReadyMessage = {
     title: house.name,
     fields
   };
-  if (house.currentGoal) {
-    message.description = `Current goal: ${house.currentGoal}`;
+  if (house.sigil) {
+    message.description = house.sigil;
   }
 
   return message;
@@ -344,6 +369,17 @@ function formatHouseLeader(house: House): string {
   }
 
   return leaderName;
+}
+
+function formatHouseFounded(house: House): string {
+  if (house.foundedLabel) {
+    return house.foundedLabel;
+  }
+  if (house.foundedAt) {
+    return formatDate(house.foundedAt);
+  }
+
+  return "No founding record.";
 }
 
 function getPlayerDisplayName(player: Player): string {

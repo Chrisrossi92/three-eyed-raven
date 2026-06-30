@@ -1,4 +1,12 @@
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, type ButtonInteraction } from "discord.js";
+import {
+  ActionRowBuilder,
+  ModalBuilder,
+  StringSelectMenuBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  type ButtonInteraction
+} from "discord.js";
+import { listHouses } from "../../services/houseService.js";
 import { canUseCrown, crownCustomIds, crownModalFieldIds } from "../commands/crownCommand.js";
 
 export async function handleCrownButton(interaction: ButtonInteraction): Promise<boolean> {
@@ -16,6 +24,15 @@ export async function handleCrownButton(interaction: ButtonInteraction): Promise
 
   if (interaction.customId === crownCustomIds.recognizeHouse) {
     await interaction.showModal(createRecognizeHouseModal());
+    return true;
+  }
+
+  if (interaction.customId === crownCustomIds.editHouse) {
+    await interaction.reply({
+      content: "Select the House the Crown wishes to shape.",
+      components: [await createEditHouseSelectRow()],
+      ephemeral: true
+    });
     return true;
   }
 
@@ -37,6 +54,25 @@ export async function handleCrownButton(interaction: ButtonInteraction): Promise
     ephemeral: true
   });
   return true;
+}
+
+async function createEditHouseSelectRow(): Promise<ActionRowBuilder<StringSelectMenuBuilder>> {
+  const houses = await listHouses();
+  const options = houses.slice(0, 25).map((house) => ({
+    label: house.name,
+    value: house.id,
+    description: house.words ?? house.status
+  }));
+
+  return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+    new StringSelectMenuBuilder()
+      .setCustomId(crownCustomIds.editHouseSelect)
+      .setPlaceholder("Choose a recognized House")
+      .setMinValues(1)
+      .setMaxValues(1)
+      .setOptions(options.length > 0 ? options : [{ label: "No Houses recognized", value: "none" }])
+      .setDisabled(options.length === 0)
+  );
 }
 
 function isCrownButton(customId: string): boolean {

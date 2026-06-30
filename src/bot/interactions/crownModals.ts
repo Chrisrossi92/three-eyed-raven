@@ -6,7 +6,7 @@ import {
   crownModalFieldIds
 } from "../commands/crownCommand.js";
 import { recordChronicleEntry } from "../../services/chronicleService.js";
-import { recognizeHouse } from "../../services/houseService.js";
+import { recognizeHouse, updateHouse } from "../../services/houseService.js";
 import { setCurrentAge } from "../../services/realmService.js";
 
 export async function handleCrownModal(interaction: ModalSubmitInteraction): Promise<boolean> {
@@ -27,12 +27,48 @@ export async function handleCrownModal(interaction: ModalSubmitInteraction): Pro
     return true;
   }
 
+  if (interaction.customId.startsWith(`${crownCustomIds.editHouseSelect}:`)) {
+    await handleEditHouseModal(interaction);
+    return true;
+  }
+
   if (interaction.customId === crownCustomIds.changeAgeModal) {
     await handleChangeAgeModal(interaction);
     return true;
   }
 
   return false;
+}
+
+async function handleEditHouseModal(interaction: ModalSubmitInteraction): Promise<void> {
+  const houseId = interaction.customId.slice(`${crownCustomIds.editHouseSelect}:`.length);
+  const words = interaction.fields.getTextInputValue(crownModalFieldIds.houseWords).trim();
+  const seat = interaction.fields.getTextInputValue(crownModalFieldIds.houseSeat).trim();
+  const description = interaction.fields.getTextInputValue(crownModalFieldIds.houseDescription).trim();
+  const currentGoal = interaction.fields.getTextInputValue(crownModalFieldIds.houseCurrentGoal).trim();
+  const sigil = interaction.fields.getTextInputValue(crownModalFieldIds.houseSigil).trim();
+
+  try {
+    const house = await updateHouse({
+      id: houseId,
+      words: words || null,
+      seat: seat || null,
+      settlementName: seat || null,
+      description: description || null,
+      currentGoal: currentGoal || null,
+      sigil: sigil || null
+    });
+
+    await interaction.reply({
+      ...(await createCrownPanelReply()),
+      content: `${house.name} has been updated.`
+    });
+  } catch (error: unknown) {
+    await interaction.reply({
+      content: getFriendlyError(error),
+      ephemeral: true
+    });
+  }
 }
 
 async function handleRecognizeHouseModal(interaction: ModalSubmitInteraction): Promise<void> {
@@ -103,6 +139,7 @@ async function handleChangeAgeModal(interaction: ModalSubmitInteraction): Promis
 function isCrownModal(customId: string): boolean {
   return (
     customId === crownCustomIds.recognizeHouseModal ||
+    customId.startsWith(`${crownCustomIds.editHouseSelect}:`) ||
     customId === crownCustomIds.changeAgeModal
   );
 }
@@ -126,6 +163,9 @@ function getFriendlyError(error: unknown): string {
       return error.message;
     }
     if (error.message.includes("required")) {
+      return error.message;
+    }
+    if (error.message.includes("Unknown House")) {
       return error.message;
     }
   }
