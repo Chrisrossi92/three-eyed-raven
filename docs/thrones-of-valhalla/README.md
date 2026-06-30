@@ -7,6 +7,7 @@ These docs are the source of truth for future Raven bot implementation work. The
 ## Docs
 
 - [Gameplay Loop Bible](GAMEPLAY_LOOP_BIBLE.md): main source of truth for the server loop, design pillars, progression rhythm, Royal Hunts, and Phase 1 Raven MVP translation.
+- [Phase 1 Raven MVP Spec](PHASE_1_RAVEN_MVP_SPEC.md): first buildable Raven bot slice for Realm status, House status, Chronicle review, achievements, titles, Royal Hunts, and check-ins.
 - [Raven Tracking Philosophy](RAVEN_TRACKING_PHILOSOPHY.md): low-friction tracking rules for the Raven as historian, not auditor.
 - [Realm Rules And Progression](REALM_RULES_AND_PROGRESSION.md): joining rules, Houses, Crown authority, boss gates, Royal Tribute, PvP boundaries, and succession.
 - [Achievements And Legacy](ACHIEVEMENTS_AND_LEGACY.md): permanent achievements, changeable titles, Chronicle entries, and legacy recognition.
