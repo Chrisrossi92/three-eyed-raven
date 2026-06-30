@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "bot:dev": "tsx src/bot/index.ts",
+    "discord:register": "tsx src/bot/registerCommands.ts",
     "commands:register": "npm run build && node dist/commands/deployCommands.js",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
