@@ -25,6 +25,11 @@ export async function handleCrownButton(interaction: ButtonInteraction): Promise
     return true;
   }
 
+  if (interaction.customId === crownCustomIds.assignMember) {
+    await interaction.showModal(createAssignMemberModal());
+    return true;
+  }
+
   if (interaction.customId === crownCustomIds.changeAge) {
     await interaction.showModal(createChangeAgeModal());
     return true;
@@ -35,6 +40,42 @@ export async function handleCrownButton(interaction: ButtonInteraction): Promise
     ephemeral: true
   });
   return true;
+}
+
+function createAssignMemberModal(): ModalBuilder {
+  return new ModalBuilder()
+    .setCustomId(crownCustomIds.assignMemberModal)
+    .setTitle("Assign Member")
+    .addComponents(
+      new ActionRowBuilder<TextInputBuilder>().addComponents(
+        new TextInputBuilder()
+          .setCustomId(crownModalFieldIds.memberDiscordUser)
+          .setLabel("Discord User ID or Mention")
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+      ),
+      new ActionRowBuilder<TextInputBuilder>().addComponents(
+        new TextInputBuilder()
+          .setCustomId(crownModalFieldIds.memberRealmName)
+          .setLabel("Realm Name")
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+      ),
+      new ActionRowBuilder<TextInputBuilder>().addComponents(
+        new TextInputBuilder()
+          .setCustomId(crownModalFieldIds.memberHouse)
+          .setLabel("House")
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+      ),
+      new ActionRowBuilder<TextInputBuilder>().addComponents(
+        new TextInputBuilder()
+          .setCustomId(crownModalFieldIds.memberNotes)
+          .setLabel("Notes")
+          .setStyle(TextInputStyle.Paragraph)
+          .setRequired(false)
+      )
+    );
 }
 
 function isCrownButton(customId: string): boolean {

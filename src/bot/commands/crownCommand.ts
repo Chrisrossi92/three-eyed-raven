@@ -11,11 +11,13 @@ import { getRealmStatus, type RealmStatus } from "../../services/realmService.js
 
 export const crownCustomIds = {
   recognizeHouse: "crown:recognize-house",
+  assignMember: "crown:assign-member",
   changeAge: "crown:change-age",
   royalHunt: "crown:royal-hunt",
   chronicle: "crown:chronicle",
   awards: "crown:awards",
   recognizeHouseModal: "crown:modal:recognize-house",
+  assignMemberModal: "crown:modal:assign-member",
   changeAgeModal: "crown:modal:change-age"
 } as const;
 
@@ -23,6 +25,10 @@ export const crownModalFieldIds = {
   houseName: "houseName",
   houseLeader: "houseLeader",
   houseSettlement: "houseSettlement",
+  memberDiscordUser: "memberDiscordUser",
+  memberRealmName: "memberRealmName",
+  memberHouse: "memberHouse",
+  memberNotes: "memberNotes",
   newAge: "newAge",
   ageReason: "ageReason",
   recordChronicle: "recordChronicle"
@@ -97,16 +103,20 @@ export function createCrownPanelComponents(): ActionRowBuilder<ButtonBuilder>[] 
       .setLabel("Recognize House")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
-      .setCustomId(crownCustomIds.changeAge)
-      .setLabel("Change Age")
+      .setCustomId(crownCustomIds.assignMember)
+      .setLabel("Assign Member")
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
-      .setCustomId(crownCustomIds.royalHunt)
-      .setLabel("Royal Hunt")
-      .setStyle(ButtonStyle.Secondary)
+      .setCustomId(crownCustomIds.changeAge)
+      .setLabel("Change Age")
+      .setStyle(ButtonStyle.Primary)
   );
 
   const rowTwo = new ActionRowBuilder<ButtonBuilder>().addComponents(
+    new ButtonBuilder()
+      .setCustomId(crownCustomIds.royalHunt)
+      .setLabel("Royal Hunt")
+      .setStyle(ButtonStyle.Secondary),
     new ButtonBuilder()
       .setCustomId(crownCustomIds.chronicle)
       .setLabel("Chronicle")

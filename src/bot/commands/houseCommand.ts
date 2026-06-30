@@ -11,6 +11,7 @@ import {
   listHouses
 } from "../../services/houseService.js";
 import { toDiscordReplyPayload } from "../discordMessageAdapter.js";
+import { createHouseAutocompleteChoices } from "../houseSearch.js";
 
 export const houseCommand = {
   data: new SlashCommandBuilder()
@@ -33,22 +34,7 @@ export const houseCommand = {
 
     const focusedValue = String(focusedOption.value);
     const houses = await listHouses();
-    const normalizedQuery = normalizeHouseSearch(focusedValue);
-    const choices = houses
-      .filter((house) => {
-        if (!normalizedQuery) {
-          return true;
-        }
-
-        return normalizeHouseSearch(house.name).includes(normalizedQuery);
-      })
-      .slice(0, 25)
-      .map((house) => ({
-        name: house.name,
-        value: house.name
-      }));
-
-    await interaction.respond(choices);
+    await interaction.respond(createHouseAutocompleteChoices(houses, focusedValue));
   },
 
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -100,12 +86,4 @@ function formatRecognizedHouses(houses: Awaited<ReturnType<typeof listHouses>>):
   }
 
   return `Recognized Houses: ${houses.map((house) => house.name).join(", ")}`;
-}
-
-function normalizeHouseSearch(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/^house\s+/, "")
-    .replace(/[^a-z0-9]+/g, "");
 }
