@@ -58,6 +58,11 @@ export async function getHouseByName(name: string): Promise<House | undefined> {
   return houses.find((house) => normalizeName(house.name) === normalizedName);
 }
 
+export async function getPlayerByDiscordId(discordId: string): Promise<Player | undefined> {
+  const players = await loadPlayers();
+  return players.find((player) => player.discordId === discordId);
+}
+
 export async function recognizeHouse(input: RecognizeHouseInput): Promise<House> {
   const id = input.id.trim();
   const name = input.name.trim();
