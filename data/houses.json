@@ -1,0 +1,44 @@
+[
+  {
+    "id": "house-baratheon",
+    "name": "House Baratheon",
+    "leaderDiscordId": null,
+    "memberDiscordIds": [],
+    "status": "Active",
+    "settlementName": null,
+    "currentGoal": null,
+    "alliances": [],
+    "rivals": [],
+    "branchOf": null,
+    "foundedAt": null,
+    "lastCheckInAt": null
+  },
+  {
+    "id": "house-stark",
+    "name": "House Stark",
+    "leaderDiscordId": null,
+    "memberDiscordIds": [],
+    "status": "Active",
+    "settlementName": null,
+    "currentGoal": null,
+    "alliances": [],
+    "rivals": [],
+    "branchOf": null,
+    "foundedAt": null,
+    "lastCheckInAt": null
+  },
+  {
+    "id": "house-lannister",
+    "name": "House Lannister",
+    "leaderDiscordId": null,
+    "memberDiscordIds": [],
+    "status": "Active",
+    "settlementName": null,
+    "currentGoal": null,
+    "alliances": [],
+    "rivals": [],
+    "branchOf": null,
+    "foundedAt": null,
+    "lastCheckInAt": null
+  }
+]

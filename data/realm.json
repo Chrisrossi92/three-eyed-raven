@@ -1,0 +1,23 @@
+{
+  "currentAge": "Age of Eikthyr",
+  "crownHouse": "House Baratheon",
+  "ruler": "CDAWG9000",
+  "currentTribute": {
+    "status": "Not Started",
+    "summary": "No Royal Tribute is currently active.",
+    "updatedAt": null
+  },
+  "nextHunt": {
+    "boss": null,
+    "status": "Not Scheduled",
+    "scheduledFor": null,
+    "summary": "No Royal Hunt is currently scheduled."
+  },
+  "recognizedHouses": [
+    "House Baratheon",
+    "House Stark",
+    "House Lannister"
+  ],
+  "decrees": [],
+  "successionState": "Not Active"
+}

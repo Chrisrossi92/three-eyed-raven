@@ -10,4 +10,16 @@ coverage/
 .vscode/
 .idea/
 
-data/
+/data/*
+!/data/
+!/data/realm.json
+!/data/houses.json
+!/data/players.json
+!/data/chronicle.json
+!/data/achievements.json
+!/data/submissions.json
+
+src/data/*
+!src/data/
+!src/data/ravenStore.ts
+!src/data/ravenTypes.ts
