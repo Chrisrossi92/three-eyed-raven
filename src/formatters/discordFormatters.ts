@@ -155,7 +155,15 @@ export function formatPlayerLegacy(
   };
 }
 
-export function formatChronicleEntry(entry: ChronicleEntry): DiscordReadyMessage {
+export interface ChronicleFormatContext {
+  houses?: House[];
+  players?: Player[];
+}
+
+export function formatChronicleEntry(
+  entry: ChronicleEntry,
+  context: ChronicleFormatContext = {}
+): DiscordReadyMessage {
   const fields: DiscordMessageField[] = [
     {
       name: "Date",
@@ -172,7 +180,7 @@ export function formatChronicleEntry(entry: ChronicleEntry): DiscordReadyMessage
   if (entry.involvedHouses.length > 0) {
     fields.push({
       name: "Involved Houses",
-      value: entry.involvedHouses.join(", "),
+      value: entry.involvedHouses.map((houseId) => formatHouseReference(houseId, context.houses ?? [])).join(", "),
       inline: false
     });
   }
@@ -180,7 +188,7 @@ export function formatChronicleEntry(entry: ChronicleEntry): DiscordReadyMessage
   if (entry.involvedPlayers.length > 0) {
     fields.push({
       name: "Involved Players",
-      value: entry.involvedPlayers.join(", "),
+      value: entry.involvedPlayers.map((playerId) => formatPlayerReference(playerId, context.players ?? [])).join(", "),
       inline: false
     });
   }
@@ -193,7 +201,10 @@ export function formatChronicleEntry(entry: ChronicleEntry): DiscordReadyMessage
   };
 }
 
-export function formatChronicleEntryList(entries: ChronicleEntry[]): DiscordReadyMessage {
+export function formatChronicleEntryList(
+  entries: ChronicleEntry[],
+  context: ChronicleFormatContext = {}
+): DiscordReadyMessage {
   if (entries.length === 0) {
     return {
       title: "Chronicle",
@@ -206,7 +217,7 @@ export function formatChronicleEntryList(entries: ChronicleEntry[]): DiscordRead
     description: "Recent official Realm history.",
     fields: entries.map((entry) => ({
       name: `${formatDate(entry.date)} - ${entry.type}`,
-      value: formatChronicleListValue(entry),
+      value: formatChronicleListValue(entry, context),
       inline: false
     }))
   };
@@ -280,18 +291,32 @@ function formatList(items: string[], emptyText: string): string {
   return items.length > 0 ? items.join(", ") : emptyText;
 }
 
-function formatChronicleListValue(entry: ChronicleEntry): string {
+function formatChronicleListValue(entry: ChronicleEntry, context: ChronicleFormatContext): string {
   const details = [entry.summary];
 
   if (entry.involvedHouses.length > 0) {
-    details.push(`Houses: ${entry.involvedHouses.join(", ")}`);
+    details.push(
+      `Houses: ${entry.involvedHouses.map((houseId) => formatHouseReference(houseId, context.houses ?? [])).join(", ")}`
+    );
   }
 
   if (entry.involvedPlayers.length > 0) {
-    details.push(`Players: ${entry.involvedPlayers.join(", ")}`);
+    details.push(
+      `Players: ${entry.involvedPlayers.map((playerId) => formatPlayerReference(playerId, context.players ?? [])).join(", ")}`
+    );
   }
 
   return details.join("\n");
+}
+
+function formatHouseReference(houseId: string, houses: House[]): string {
+  const house = houses.find((candidate) => candidate.id === houseId || candidate.name === houseId);
+  return house?.name ?? houseId;
+}
+
+function formatPlayerReference(playerId: string, players: Player[]): string {
+  const player = players.find((candidate) => candidate.discordId === playerId);
+  return player ? getPlayerDisplayName(player) : playerId;
 }
 
 function formatHouseLeader(house: House): string {
@@ -327,5 +352,10 @@ function formatDate(value: string): string {
     return value;
   }
 
-  return date.toISOString();
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC"
+  }).format(date);
 }

@@ -3,6 +3,7 @@ import { Client, Events, GatewayIntentBits } from "discord.js";
 import { chronicleCommand } from "./commands/chronicleCommand.js";
 import { crownCommand } from "./commands/crownCommand.js";
 import { realmCommand } from "./commands/realmCommand.js";
+import { handleChronicleButton } from "./interactions/chronicleButtons.js";
 import { handleCrownButton } from "./interactions/crownButtons.js";
 import { handleCrownModal } from "./interactions/crownModals.js";
 
@@ -18,6 +19,10 @@ client.once(Events.ClientReady, (readyClient) => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
+    if (interaction.isButton() && (await handleChronicleButton(interaction))) {
+      return;
+    }
+
     if (interaction.isButton() && (await handleCrownButton(interaction))) {
       return;
     }
