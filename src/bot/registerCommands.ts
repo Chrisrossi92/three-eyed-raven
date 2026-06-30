@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { REST, Routes } from "discord.js";
 import { chronicleCommand } from "./commands/chronicleCommand.js";
+import { crownAssignCommand } from "./commands/crownAssignCommand.js";
 import { crownCommand } from "./commands/crownCommand.js";
 import { houseCommand } from "./commands/houseCommand.js";
 import { meCommand } from "./commands/meCommand.js";
@@ -14,6 +15,7 @@ const rest = new REST({ version: "10" }).setToken(token);
 const commands = [
   realmCommand.data.toJSON(),
   crownCommand.data.toJSON(),
+  crownAssignCommand.data.toJSON(),
   chronicleCommand.data.toJSON(),
   houseCommand.data.toJSON(),
   meCommand.data.toJSON()

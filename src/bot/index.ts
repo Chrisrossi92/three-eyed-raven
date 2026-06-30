@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import { chronicleCommand } from "./commands/chronicleCommand.js";
+import { crownAssignCommand } from "./commands/crownAssignCommand.js";
 import { crownCommand } from "./commands/crownCommand.js";
 import { houseCommand } from "./commands/houseCommand.js";
 import { meCommand } from "./commands/meCommand.js";
@@ -22,6 +23,11 @@ client.once(Events.ClientReady, (readyClient) => {
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
     if (interaction.isAutocomplete()) {
+      if (interaction.commandName === crownAssignCommand.data.name) {
+        await crownAssignCommand.autocomplete(interaction);
+        return;
+      }
+
       if (interaction.commandName === houseCommand.data.name) {
         await houseCommand.autocomplete(interaction);
         return;
@@ -49,6 +55,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.commandName === crownCommand.data.name) {
       await crownCommand.execute(interaction);
+      return;
+    }
+
+    if (interaction.commandName === crownAssignCommand.data.name) {
+      await crownAssignCommand.execute(interaction);
       return;
     }
 

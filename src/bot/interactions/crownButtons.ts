@@ -1,10 +1,4 @@
-import {
-  ActionRowBuilder,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-  type ButtonInteraction
-} from "discord.js";
+import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, type ButtonInteraction } from "discord.js";
 import { canUseCrown, crownCustomIds, crownModalFieldIds } from "../commands/crownCommand.js";
 
 export async function handleCrownButton(interaction: ButtonInteraction): Promise<boolean> {
@@ -26,7 +20,10 @@ export async function handleCrownButton(interaction: ButtonInteraction): Promise
   }
 
   if (interaction.customId === crownCustomIds.assignMember) {
-    await interaction.showModal(createAssignMemberModal());
+    await interaction.reply({
+      content: "Use /crown-assign to assign a Discord user with the proper user picker.",
+      ephemeral: true
+    });
     return true;
   }
 
@@ -40,42 +37,6 @@ export async function handleCrownButton(interaction: ButtonInteraction): Promise
     ephemeral: true
   });
   return true;
-}
-
-function createAssignMemberModal(): ModalBuilder {
-  return new ModalBuilder()
-    .setCustomId(crownCustomIds.assignMemberModal)
-    .setTitle("Assign Member")
-    .addComponents(
-      new ActionRowBuilder<TextInputBuilder>().addComponents(
-        new TextInputBuilder()
-          .setCustomId(crownModalFieldIds.memberDiscordUser)
-          .setLabel("Discord User ID or Mention")
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-      ),
-      new ActionRowBuilder<TextInputBuilder>().addComponents(
-        new TextInputBuilder()
-          .setCustomId(crownModalFieldIds.memberRealmName)
-          .setLabel("Realm Name")
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-      ),
-      new ActionRowBuilder<TextInputBuilder>().addComponents(
-        new TextInputBuilder()
-          .setCustomId(crownModalFieldIds.memberHouse)
-          .setLabel("House")
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-      ),
-      new ActionRowBuilder<TextInputBuilder>().addComponents(
-        new TextInputBuilder()
-          .setCustomId(crownModalFieldIds.memberNotes)
-          .setLabel("Notes")
-          .setStyle(TextInputStyle.Paragraph)
-          .setRequired(false)
-      )
-    );
 }
 
 function isCrownButton(customId: string): boolean {
