@@ -1,0 +1,38 @@
+{
+  "name": "three-eyed-raven",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A production-quality Discord bot foundation for a Game of Thrones-inspired Valheim roleplay server.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "commands:register": "npm run build && node dist/commands/deployCommands.js",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "smoke": "npm run smoke:knowledge && npm run smoke:raven && npm run smoke:planner && npm run smoke:command && npm run smoke:permissions && npm run smoke:faq && npm run smoke:references && npm run smoke:chronicle-approval && npm run smoke:chronicle-recording && npm run smoke:duties",
+    "smoke:knowledge": "npm run build && node dist/smoke/knowledge-smoke.js",
+    "smoke:raven": "npm run build && node dist/smoke/raven-response-smoke.js",
+    "smoke:planner": "npm run build && node dist/smoke/raven-planner-smoke.js",
+    "smoke:command": "npm run build && node dist/smoke/raven-command-adapter-smoke.js",
+    "smoke:permissions": "npm run build && node dist/smoke/discord-permissions-smoke.js",
+    "smoke:faq": "npm run build && node dist/smoke/faq-quality-smoke.js",
+    "smoke:references": "npm run build && node dist/smoke/domain-reference-smoke.js",
+    "smoke:chronicle-approval": "npm run build && node dist/smoke/chronicle-approval-smoke.js",
+    "smoke:chronicle-recording": "npm run build && node dist/smoke/chronicle-recording-smoke.js",
+    "smoke:duties": "npm run build && node dist/smoke/duties-smoke.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.26.4",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}
