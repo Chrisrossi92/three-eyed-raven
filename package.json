@@ -21,7 +21,8 @@
     "smoke:chronicle-approval": "npm run build && node dist/smoke/chronicle-approval-smoke.js",
     "smoke:chronicle-recording": "npm run build && node dist/smoke/chronicle-recording-smoke.js",
     "smoke:duties": "npm run build && node dist/smoke/duties-smoke.js",
-    "smoke:data": "tsc --pretty false --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir /private/tmp/raven-data-smoke scripts/smoke-data-store.ts src/data/ravenStore.ts src/data/ravenTypes.ts && node /private/tmp/raven-data-smoke/scripts/smoke-data-store.js"
+    "smoke:data": "tsc --pretty false --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir /private/tmp/raven-data-smoke scripts/smoke-data-store.ts src/data/ravenStore.ts src/data/ravenTypes.ts && node /private/tmp/raven-data-smoke/scripts/smoke-data-store.js",
+    "smoke:services": "tsc --pretty false --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir /private/tmp/raven-services-smoke scripts/smoke-services.ts src/data/ravenStore.ts src/data/ravenTypes.ts src/services/chronicleService.ts src/services/houseService.ts src/services/realmService.ts && node /private/tmp/raven-services-smoke/scripts/smoke-services.js"
   },
   "engines": {
     "node": ">=20.0.0"
