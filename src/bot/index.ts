@@ -3,6 +3,7 @@ import { Client, Events, GatewayIntentBits } from "discord.js";
 import { chronicleCommand } from "./commands/chronicleCommand.js";
 import { crownCommand } from "./commands/crownCommand.js";
 import { houseCommand } from "./commands/houseCommand.js";
+import { meCommand } from "./commands/meCommand.js";
 import { realmCommand } from "./commands/realmCommand.js";
 import { handleChronicleButton } from "./interactions/chronicleButtons.js";
 import { handleCrownButton } from "./interactions/crownButtons.js";
@@ -63,6 +64,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.commandName === houseCommand.data.name) {
       await houseCommand.execute(interaction);
+      return;
+    }
+
+    if (interaction.commandName === meCommand.data.name) {
+      await meCommand.execute(interaction);
       return;
     }
 

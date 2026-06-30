@@ -3,6 +3,7 @@ import { REST, Routes } from "discord.js";
 import { chronicleCommand } from "./commands/chronicleCommand.js";
 import { crownCommand } from "./commands/crownCommand.js";
 import { houseCommand } from "./commands/houseCommand.js";
+import { meCommand } from "./commands/meCommand.js";
 import { realmCommand } from "./commands/realmCommand.js";
 
 const token = getRequiredEnv("DISCORD_TOKEN");
@@ -14,7 +15,8 @@ const commands = [
   realmCommand.data.toJSON(),
   crownCommand.data.toJSON(),
   chronicleCommand.data.toJSON(),
-  houseCommand.data.toJSON()
+  houseCommand.data.toJSON(),
+  meCommand.data.toJSON()
 ];
 
 await rest.put(Routes.applicationGuildCommands(clientId, guildId), {

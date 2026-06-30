@@ -116,12 +116,13 @@ export function formatHouseStatus(house: House | undefined): DiscordReadyMessage
 
 export function formatPlayerLegacy(
   player: Player,
-  achievements: AchievementAward[]
+  achievements: AchievementAward[],
+  context: { houses?: House[] } = {}
 ): DiscordReadyMessage {
   const playerAchievements = achievements.filter(
     (award) => award.awardedToType === "player" && award.awardedToId === player.discordId
   );
-  const recentAchievementNames = playerAchievements.slice(-3).map((award) => award.name);
+  const recentAchievementNames = playerAchievements.slice(-5).map((award) => award.name);
   const latestNote = player.legacyNotes.at(-1);
 
   return {
@@ -130,7 +131,7 @@ export function formatPlayerLegacy(
     fields: [
       {
         name: "House",
-        value: player.houseId ?? "No House recorded.",
+        value: formatPlayerHouse(player, context.houses ?? []),
         inline: true
       },
       {
@@ -317,6 +318,15 @@ function formatHouseReference(houseId: string, houses: House[]): string {
 function formatPlayerReference(playerId: string, players: Player[]): string {
   const player = players.find((candidate) => candidate.discordId === playerId);
   return player ? getPlayerDisplayName(player) : playerId;
+}
+
+function formatPlayerHouse(player: Player, houses: House[]): string {
+  if (!player.houseId) {
+    return "No House recorded.";
+  }
+
+  const house = houses.find((candidate) => candidate.id === player.houseId);
+  return house?.name ?? player.houseId;
 }
 
 function formatHouseLeader(house: House): string {
