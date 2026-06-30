@@ -19,12 +19,18 @@ export interface AwardAchievementInput {
   awardedBy: string;
   awardedAt?: string;
   displayName?: string;
+  discordUsername?: string;
+  serverNickname?: string;
+  realmName?: string;
   recordChronicle?: boolean;
 }
 
 export interface GrantTitleInput {
   discordId: string;
   displayName?: string;
+  discordUsername?: string;
+  serverNickname?: string;
+  realmName?: string;
   title: string;
   grantedBy: string;
   grantedAt?: string;
@@ -41,6 +47,9 @@ export interface RemoveTitleInput {
 export interface AddLegacyNoteInput {
   discordId: string;
   displayName?: string;
+  discordUsername?: string;
+  serverNickname?: string;
+  realmName?: string;
   note: string;
   source?: string;
   createdAt?: string;
@@ -66,7 +75,15 @@ export async function awardAchievement(input: AwardAchievementInput): Promise<Ac
   if (input.awardedToType === "house") {
     await assertKnownHouse(awardedToId);
   } else {
-    await ensurePlayer(createEnsurePlayerInput(awardedToId, input.displayName));
+    await ensurePlayer(
+      createEnsurePlayerInput({
+        discordId: awardedToId,
+        displayName: input.displayName,
+        discordUsername: input.discordUsername,
+        serverNickname: input.serverNickname,
+        realmName: input.realmName
+      })
+    );
   }
 
   const achievements = await loadAchievements();
@@ -121,7 +138,15 @@ export async function grantTitle(input: GrantTitleInput): Promise<Player> {
     throw new Error("Title is required.");
   }
 
-  const player = await ensurePlayer(createEnsurePlayerInput(input.discordId, input.displayName));
+  const player = await ensurePlayer(
+    createEnsurePlayerInput({
+      discordId: input.discordId,
+      displayName: input.displayName,
+      discordUsername: input.discordUsername,
+      serverNickname: input.serverNickname,
+      realmName: input.realmName
+    })
+  );
 
   const updatedPlayer: Player = {
     ...player,
@@ -133,7 +158,7 @@ export async function grantTitle(input: GrantTitleInput): Promise<Player> {
     const reason = input.reason ? ` Reason: ${input.reason}` : "";
     const chronicleInput: RecordChronicleEntryInput = {
       type: "title",
-      summary: `${updatedPlayer.displayName} was granted the title ${title}.${reason}`,
+      summary: `${getPlayerDisplayName(updatedPlayer)} was granted the title ${title}.${reason}`,
       involvedPlayers: [updatedPlayer.discordId],
       approvedBy: input.grantedBy,
       source: "admin"
@@ -169,7 +194,15 @@ export async function addLegacyNote(input: AddLegacyNoteInput): Promise<Player> 
     throw new Error("Legacy note is required.");
   }
 
-  const player = await ensurePlayer(createEnsurePlayerInput(input.discordId, input.displayName));
+  const player = await ensurePlayer(
+    createEnsurePlayerInput({
+      discordId: input.discordId,
+      displayName: input.displayName,
+      discordUsername: input.discordUsername,
+      serverNickname: input.serverNickname,
+      realmName: input.realmName
+    })
+  );
 
   const createdAt = input.createdAt ?? new Date().toISOString();
   const source = input.source ?? "manual";
@@ -185,6 +218,9 @@ export async function addLegacyNote(input: AddLegacyNoteInput): Promise<Player> 
 async function ensurePlayer(input: {
   discordId: string;
   displayName?: string;
+  discordUsername?: string;
+  serverNickname?: string;
+  realmName?: string;
 }): Promise<Player> {
   const discordId = input.discordId.trim();
   if (!discordId) {
@@ -194,40 +230,120 @@ async function ensurePlayer(input: {
   const players = await loadPlayers();
   const existingPlayer = players.find((player) => player.discordId === discordId);
   if (existingPlayer) {
-    return existingPlayer;
+    const updatedPlayer = applyPlayerIdentity(existingPlayer, input);
+    if (updatedPlayer !== existingPlayer) {
+      await savePlayer(updatedPlayer);
+    }
+    return updatedPlayer;
   }
 
-  const displayName = input.displayName?.trim();
-  if (!displayName) {
+  if (!hasAnyDisplayIdentity(input)) {
     throw new Error(`Unknown player: ${discordId}`);
   }
 
   const player: Player = {
     discordId,
-    displayName,
     houseId: null,
     achievements: [],
     currentTitle: null,
     legacyNotes: []
   };
-  await savePlayers([...players, player]);
-  return player;
+  const identifiedPlayer = applyPlayerIdentity(player, input);
+  await savePlayers([...players, identifiedPlayer]);
+  return identifiedPlayer;
 }
 
-function createEnsurePlayerInput(discordId: string, displayName?: string): {
+function createEnsurePlayerInput(input: {
+  discordId: string;
+  displayName?: string | undefined;
+  discordUsername?: string | undefined;
+  serverNickname?: string | undefined;
+  realmName?: string | undefined;
+}): {
   discordId: string;
   displayName?: string;
+  discordUsername?: string;
+  serverNickname?: string;
+  realmName?: string;
 } {
-  const input: {
+  const output: {
     discordId: string;
     displayName?: string;
-  } = { discordId };
+    discordUsername?: string;
+    serverNickname?: string;
+    realmName?: string;
+  } = { discordId: input.discordId };
 
-  if (displayName !== undefined) {
-    input.displayName = displayName;
+  if (input.displayName !== undefined) {
+    output.displayName = input.displayName;
+  }
+  if (input.discordUsername !== undefined) {
+    output.discordUsername = input.discordUsername;
+  }
+  if (input.serverNickname !== undefined) {
+    output.serverNickname = input.serverNickname;
+  }
+  if (input.realmName !== undefined) {
+    output.realmName = input.realmName;
   }
 
-  return input;
+  return output;
+}
+
+function applyPlayerIdentity(
+  player: Player,
+  input: {
+    displayName?: string;
+    discordUsername?: string;
+    serverNickname?: string;
+    realmName?: string;
+  }
+): Player {
+  const updated: Player = { ...player };
+  let changed = false;
+
+  if (input.displayName !== undefined) {
+    updated.displayName = input.displayName || null;
+    changed = true;
+  }
+  if (input.discordUsername !== undefined) {
+    updated.discordUsername = input.discordUsername || null;
+    changed = true;
+  }
+  if (input.serverNickname !== undefined) {
+    updated.serverNickname = input.serverNickname || null;
+    changed = true;
+  }
+  if (input.realmName !== undefined) {
+    updated.realmName = input.realmName || null;
+    changed = true;
+  }
+
+  return changed ? updated : player;
+}
+
+function hasAnyDisplayIdentity(input: {
+  displayName?: string;
+  discordUsername?: string;
+  serverNickname?: string;
+  realmName?: string;
+}): boolean {
+  return Boolean(
+    input.realmName?.trim() ||
+      input.serverNickname?.trim() ||
+      input.displayName?.trim() ||
+      input.discordUsername?.trim()
+  );
+}
+
+function getPlayerDisplayName(player: Player): string {
+  return (
+    player.realmName?.trim() ||
+    player.serverNickname?.trim() ||
+    player.displayName?.trim() ||
+    player.discordUsername?.trim() ||
+    player.discordId
+  );
 }
 
 async function savePlayer(player: Player): Promise<void> {

@@ -26,20 +26,26 @@ try {
     category: "smoke",
     awardedToType: "player",
     awardedToId: smokePlayerId,
-    displayName: "Smoke Legacy Player",
+    discordUsername: "smoke.legacy",
+    serverNickname: "Smoke Legacy Nick",
+    realmName: "Ser Legacy Smoke",
     awardedBy: "smoke-test"
   });
 
   const titledPlayer = await grantTitle({
     discordId: smokePlayerId,
-    displayName: "Smoke Legacy Player",
+    discordUsername: "smoke.legacy",
+    serverNickname: "Smoke Legacy Nick",
+    realmName: "Ser Legacy Smoke",
     title: "Smoke Warden",
     grantedBy: "smoke-test"
   });
 
   await addLegacyNote({
     discordId: smokePlayerId,
-    displayName: "Smoke Legacy Player",
+    discordUsername: "smoke.legacy",
+    serverNickname: "Smoke Legacy Nick",
+    realmName: "Ser Legacy Smoke",
     note: "Verified legacy note creation.",
     source: "smoke-test"
   });
@@ -47,6 +53,7 @@ try {
   const achievements = await listAchievements();
   console.log(`Achievements: ${achievements.length}`);
   console.log(`Smoke Player Title: ${titledPlayer.currentTitle}`);
+  console.log(`Smoke Player Realm Name: ${titledPlayer.realmName ?? "missing"}`);
 } finally {
   await savePlayers(originalPlayers);
   await saveAchievements(originalAchievements);

@@ -64,7 +64,7 @@ export function formatHouseStatus(house: House | undefined): DiscordReadyMessage
   const fields: DiscordMessageField[] = [
     {
       name: "Leader",
-      value: house.leaderDiscordId ?? "No leader recorded.",
+      value: formatHouseLeader(house),
       inline: true
     },
     {
@@ -125,7 +125,7 @@ export function formatPlayerLegacy(
   const latestNote = player.legacyNotes.at(-1);
 
   return {
-    title: player.displayName,
+    title: getPlayerDisplayName(player),
     description: "Player legacy",
     fields: [
       {
@@ -259,6 +259,33 @@ function formatHunt(hunt: RealmStatus["nextHunt"]): string {
 
 function formatList(items: string[], emptyText: string): string {
   return items.length > 0 ? items.join(", ") : emptyText;
+}
+
+function formatHouseLeader(house: House): string {
+  const leaderName =
+    house.leaderRealmName?.trim() ||
+    house.leaderDisplayName?.trim() ||
+    house.leaderDiscordId?.trim();
+
+  if (!leaderName) {
+    return "No leader recorded.";
+  }
+
+  if (house.leaderDiscordId && leaderName !== house.leaderDiscordId) {
+    return `${leaderName} (<@${house.leaderDiscordId}>)`;
+  }
+
+  return leaderName;
+}
+
+function getPlayerDisplayName(player: Player): string {
+  return (
+    player.realmName?.trim() ||
+    player.serverNickname?.trim() ||
+    player.displayName?.trim() ||
+    player.discordUsername?.trim() ||
+    player.discordId
+  );
 }
 
 function formatDate(value: string): string {

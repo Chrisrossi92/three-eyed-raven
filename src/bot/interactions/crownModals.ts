@@ -44,7 +44,8 @@ async function handleRecognizeHouseModal(interaction: ModalSubmitInteraction): P
     const house = await recognizeHouse({
       id: createHouseId(houseName),
       name: houseName,
-      leaderDiscordId: leader,
+      leaderRealmName: leader,
+      leaderDisplayName: leader,
       settlementName: settlement || null
     });
 

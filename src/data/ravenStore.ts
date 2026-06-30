@@ -132,6 +132,8 @@ function createStarterHouse(id: string, name: string, status: House["status"]): 
     id,
     name,
     leaderDiscordId: null,
+    leaderRealmName: null,
+    leaderDisplayName: null,
     memberDiscordIds: [],
     status,
     settlementName: null,

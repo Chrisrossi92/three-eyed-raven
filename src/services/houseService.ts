@@ -12,6 +12,8 @@ export interface RecognizeHouseInput {
   id: string;
   name: string;
   leaderDiscordId?: string | null;
+  leaderRealmName?: string | null;
+  leaderDisplayName?: string | null;
   settlementName?: string | null;
   status?: HouseStatus;
   branchOf?: string | null;
@@ -21,6 +23,8 @@ export interface RecognizeHouseInput {
 export interface UpdateHouseInput {
   id: string;
   leaderDiscordId?: string | null;
+  leaderRealmName?: string | null;
+  leaderDisplayName?: string | null;
   status?: HouseStatus;
   settlementName?: string | null;
   currentGoal?: string | null;
@@ -32,7 +36,10 @@ export interface UpdateHouseInput {
 
 export interface AssignPlayerToHouseInput {
   discordId: string;
-  displayName: string;
+  displayName?: string | null;
+  discordUsername?: string | null;
+  serverNickname?: string | null;
+  realmName?: string | null;
   houseId: string;
 }
 
@@ -73,6 +80,8 @@ export async function recognizeHouse(input: RecognizeHouseInput): Promise<House>
     id,
     name,
     leaderDiscordId: input.leaderDiscordId ?? null,
+    leaderRealmName: input.leaderRealmName ?? null,
+    leaderDisplayName: input.leaderDisplayName ?? null,
     memberDiscordIds: [],
     status: input.status ?? "Active",
     settlementName: input.settlementName ?? null,
@@ -112,6 +121,12 @@ export async function updateHouse(input: UpdateHouseInput): Promise<House> {
   if ("leaderDiscordId" in input) {
     updated.leaderDiscordId = input.leaderDiscordId ?? null;
   }
+  if ("leaderRealmName" in input) {
+    updated.leaderRealmName = input.leaderRealmName ?? null;
+  }
+  if ("leaderDisplayName" in input) {
+    updated.leaderDisplayName = input.leaderDisplayName ?? null;
+  }
   if ("status" in input && input.status) {
     updated.status = input.status;
   }
@@ -150,19 +165,8 @@ export async function assignPlayerToHouse(input: AssignPlayerToHouseInput): Prom
   const players = await loadPlayers();
   const existingPlayer = players.find((player) => player.discordId === input.discordId);
   const player: Player = existingPlayer
-    ? {
-        ...existingPlayer,
-        displayName: input.displayName,
-        houseId
-      }
-    : {
-        discordId: input.discordId,
-        displayName: input.displayName,
-        houseId,
-        achievements: [],
-        currentTitle: null,
-        legacyNotes: []
-      };
+    ? applyPlayerIdentity(existingPlayer, input, houseId)
+    : createPlayerFromAssignment(input, houseId);
 
   const nextPlayers = existingPlayer
     ? players.map((existing) => (existing.discordId === input.discordId ? player : existing))
@@ -187,4 +191,42 @@ export async function assignPlayerToHouse(input: AssignPlayerToHouseInput): Prom
 
 function normalizeName(name: string): string {
   return name.trim().toLowerCase();
+}
+
+function createPlayerFromAssignment(input: AssignPlayerToHouseInput, houseId: string): Player {
+  const player: Player = {
+    discordId: input.discordId,
+    houseId,
+    achievements: [],
+    currentTitle: null,
+    legacyNotes: []
+  };
+
+  return applyPlayerIdentity(player, input, houseId);
+}
+
+function applyPlayerIdentity(
+  player: Player,
+  input: AssignPlayerToHouseInput,
+  houseId: string
+): Player {
+  const updated: Player = {
+    ...player,
+    houseId
+  };
+
+  if ("displayName" in input) {
+    updated.displayName = input.displayName ?? null;
+  }
+  if ("discordUsername" in input) {
+    updated.discordUsername = input.discordUsername ?? null;
+  }
+  if ("serverNickname" in input) {
+    updated.serverNickname = input.serverNickname ?? null;
+  }
+  if ("realmName" in input) {
+    updated.realmName = input.realmName ?? null;
+  }
+
+  return updated;
 }

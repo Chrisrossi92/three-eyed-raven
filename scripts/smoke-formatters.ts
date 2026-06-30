@@ -22,11 +22,22 @@ const chronicle = await loadChronicle();
 const achievements = await loadAchievements();
 
 const baratheon = houses.find((house) => house.id === "house-baratheon");
+const sampleHouse =
+  baratheon && !baratheon.leaderRealmName
+    ? {
+        ...baratheon,
+        leaderDiscordId: "sample-leader",
+        leaderRealmName: "Lord Sample Baratheon",
+        leaderDisplayName: "Sample Leader"
+      }
+    : baratheon;
 
 const samplePlayer: Player =
   players[0] ?? {
     discordId: "sample-player",
-    displayName: "Sample Player",
+    discordUsername: "sample.player",
+    serverNickname: "Sample Nick",
+    realmName: "Ser Sample",
     houseId: "house-baratheon",
     achievements: ["sample-achievement"],
     currentTitle: "Warden of Smoke",
@@ -59,7 +70,7 @@ const sampleChronicle: ChronicleEntry =
 
 console.log(renderDiscordReadyMessage(formatRealmStatus(realmStatus)));
 console.log("---");
-console.log(renderDiscordReadyMessage(formatHouseStatus(baratheon)));
+console.log(renderDiscordReadyMessage(formatHouseStatus(sampleHouse)));
 console.log("---");
 console.log(renderDiscordReadyMessage(formatPlayerLegacy(samplePlayer, [sampleAchievement])));
 console.log("---");

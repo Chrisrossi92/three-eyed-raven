@@ -31,13 +31,17 @@ try {
       id: testHouseId,
       name: "House Smoke Test",
       leaderDiscordId: "smoke-leader",
+      leaderRealmName: "Lord Smoke",
+      leaderDisplayName: "Smoke Leader",
       settlementName: "Smoke Harbor"
     });
   }
 
   await assignPlayerToHouse({
     discordId: "smoke-player",
-    displayName: "Smoke Player",
+    discordUsername: "smoke.player",
+    serverNickname: "Smoke Nick",
+    realmName: "Ser Smoke",
     houseId: testHouseId
   });
 
@@ -54,9 +58,13 @@ try {
   const houses = await loadHouses();
   const players = await loadPlayers();
   const chronicle = await loadChronicle();
+  const smokePlayer = players.find((player) => player.discordId === "smoke-player");
+  const smokeHouse = houses.find((house) => house.id === testHouseId);
   console.log(`Houses: ${houses.length}`);
   console.log(`Players: ${players.length}`);
   console.log(`Chronicle Entries: ${chronicle.length}`);
+  console.log(`Smoke Player Realm Name: ${smokePlayer?.realmName ?? "missing"}`);
+  console.log(`Smoke House Leader Realm Name: ${smokeHouse?.leaderRealmName ?? "missing"}`);
 } finally {
   await saveRealm(originalRealm);
   await saveHouses(originalHouses);

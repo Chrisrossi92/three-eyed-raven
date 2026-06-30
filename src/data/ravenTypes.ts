@@ -48,7 +48,9 @@ export interface RealmState {
 export interface House {
   id: string;
   name: string;
-  leaderDiscordId: string | null;
+  leaderDiscordId?: string | null;
+  leaderRealmName?: string | null;
+  leaderDisplayName?: string | null;
   memberDiscordIds: string[];
   status: HouseStatus;
   settlementName: string | null;
@@ -62,8 +64,11 @@ export interface House {
 
 export interface Player {
   discordId: string;
-  displayName: string;
-  houseId: string | null;
+  discordUsername?: string | null;
+  serverNickname?: string | null;
+  realmName?: string | null;
+  displayName?: string | null;
+  houseId?: string | null;
   achievements: string[];
   currentTitle: string | null;
   legacyNotes: string[];
