@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { Client, Events, GatewayIntentBits } from "discord.js";
+import { chronicleCommand } from "./commands/chronicleCommand.js";
 import { crownCommand } from "./commands/crownCommand.js";
 import { realmCommand } from "./commands/realmCommand.js";
 import { handleCrownButton } from "./interactions/crownButtons.js";
@@ -36,6 +37,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (interaction.commandName === realmCommand.data.name) {
       await realmCommand.execute(interaction);
+      return;
+    }
+
+    if (interaction.commandName === chronicleCommand.data.name) {
+      await chronicleCommand.execute(interaction);
       return;
     }
 

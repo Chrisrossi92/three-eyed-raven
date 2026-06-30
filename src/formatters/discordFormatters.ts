@@ -193,6 +193,25 @@ export function formatChronicleEntry(entry: ChronicleEntry): DiscordReadyMessage
   };
 }
 
+export function formatChronicleEntryList(entries: ChronicleEntry[]): DiscordReadyMessage {
+  if (entries.length === 0) {
+    return {
+      title: "Chronicle",
+      description: "The Chronicle is quiet. No official Realm history has been recorded yet."
+    };
+  }
+
+  return {
+    title: "Recent Chronicle",
+    description: "Recent official Realm history.",
+    fields: entries.map((entry) => ({
+      name: `${formatDate(entry.date)} - ${entry.type}`,
+      value: formatChronicleListValue(entry),
+      inline: false
+    }))
+  };
+}
+
 export function formatAchievementAward(award: AchievementAward): DiscordReadyMessage {
   return {
     title: `Achievement Unlocked: ${award.name}`,
@@ -259,6 +278,20 @@ function formatHunt(hunt: RealmStatus["nextHunt"]): string {
 
 function formatList(items: string[], emptyText: string): string {
   return items.length > 0 ? items.join(", ") : emptyText;
+}
+
+function formatChronicleListValue(entry: ChronicleEntry): string {
+  const details = [entry.summary];
+
+  if (entry.involvedHouses.length > 0) {
+    details.push(`Houses: ${entry.involvedHouses.join(", ")}`);
+  }
+
+  if (entry.involvedPlayers.length > 0) {
+    details.push(`Players: ${entry.involvedPlayers.join(", ")}`);
+  }
+
+  return details.join("\n");
 }
 
 function formatHouseLeader(house: House): string {
