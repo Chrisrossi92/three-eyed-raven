@@ -1,6 +1,9 @@
 import "dotenv/config";
 import { Client, Events, GatewayIntentBits } from "discord.js";
+import { crownCommand } from "./commands/crownCommand.js";
 import { realmCommand } from "./commands/realmCommand.js";
+import { handleCrownButton } from "./interactions/crownButtons.js";
+import { handleCrownModal } from "./interactions/crownModals.js";
 
 const token = getRequiredEnv("DISCORD_TOKEN");
 
@@ -13,11 +16,24 @@ client.once(Events.ClientReady, (readyClient) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) {
-    return;
-  }
-
   try {
+    if (interaction.isButton() && (await handleCrownButton(interaction))) {
+      return;
+    }
+
+    if (interaction.isModalSubmit() && (await handleCrownModal(interaction))) {
+      return;
+    }
+
+    if (!interaction.isChatInputCommand()) {
+      return;
+    }
+
+    if (interaction.commandName === crownCommand.data.name) {
+      await crownCommand.execute(interaction);
+      return;
+    }
+
     if (interaction.commandName === realmCommand.data.name) {
       await realmCommand.execute(interaction);
       return;
@@ -35,10 +51,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
       ephemeral: true
     };
 
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp(response);
-    } else {
-      await interaction.reply(response);
+    if (interaction.isRepliable()) {
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp(response);
+      } else {
+        await interaction.reply(response);
+      }
     }
   }
 });
